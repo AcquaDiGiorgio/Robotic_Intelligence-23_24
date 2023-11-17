@@ -17,11 +17,9 @@ class Robot():
     
     self.iters_motionless = 0
     
-    self.damping = 1
-    
-    self.KP = 0.0025
-    self.KD = 0.016
-    self.KI = 0.00001
+    self.KP = 0.0026
+    self.KD = 0.013
+    self.KI = 0.000005
     
     self.v = 4.0
     self.max_w = 1.5
@@ -60,12 +58,12 @@ class Robot():
     error_i = self.sum_error * self.KI
     error_d = (error - self.prev_error) * self.KD 
 
-    w = self.damping * (error_p + error_i + error_d)
+    w = error_p + error_i + error_d
     
-    if w > self.max_w:
-      w = self.max_w
-    elif w < -self.max_w:
-      w = -self.max_w
+    #if w > self.max_w:
+    #  w = self.max_w
+    #elif w < -self.max_w:
+    #  w = -self.max_w
     
     v = self.set_angular_Naive(w)
     # v = self.v - (abs(self.targetY - cY) / self.targetY) * self.v
@@ -84,7 +82,7 @@ class Robot():
   
   def process(self, i):
     img = HAL.getImage()
-    max_x = int(img.shape[0] - img.shape[0]/2.1)
+    max_x = int(img.shape[0] - img.shape[0]/2.15)
     hsv = cv2.cvtColor(img[max_x:,:,:], cv2.COLOR_BGR2HSV)
     red_mask = cv2.inRange(hsv, (0, 125, 125), (30, 255, 255))
     contours, hierarchy = cv2.findContours(red_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -115,5 +113,6 @@ class Robot():
 i = 0
 rob = Robot()
 while True:
+    #test()
     rob.process(i)
     i += 1
